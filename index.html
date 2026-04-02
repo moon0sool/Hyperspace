@@ -186,16 +186,16 @@
 			<script>
 			async function loadPosts() {
 			  const { data } = await supabase
-				.from('posts')
+				.from('bbd')
 				.select('*')
 				.order('id', { ascending: false });
 
 			  const list = document.getElementById("post-list");
 			  list.innerHTML = "";
 
-			  data.forEach(post => {
+			  data.forEach(bbs => {
 				const li = document.createElement("li");
-				li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
+				li.innerHTML = `<strong>${bbs.title}</strong><br>${bbs.content}`;
 				list.appendChild(li);
 			  });
 			}
