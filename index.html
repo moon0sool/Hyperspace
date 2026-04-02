@@ -175,59 +175,78 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-	
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+			<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = "https://tuusoowjscftqsairkjy.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dXNvb3dqc2NmdHFzYWlya2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTEzNzAsImV4cCI6MjA5MDY4NzM3MH0.ab8laTx2EIfLb397nWlFXSNKhlQbmaqB3j0LaRpJ8ZI";
+			<script>
+			const SUPABASE_URL = "https://tuusoowjscftqsairkjy.supabase.co";
+			const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dXNvb3dqc2NmdHFzYWlya2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTEzNzAsImV4cCI6MjA5MDY4NzM3MH0.ab8laTx2EIfLb397nWlFXSNKhlQbmaqB3j0LaRpJ8ZI";
 
-// 전역 변수 하나만
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+			// 전역 변수 하나만
+			const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 게시글 불러오기
+			// 게시글 불러오기
 async function loadPosts() {
-  const { data, error } = await sb
+  const { data: posts } = await sb
     .from('bbs')
     .select('*')
     .order('id', { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
-
   const list = document.getElementById("post-list");
   list.innerHTML = "";
 
-  data.forEach(post => {
+  for (const post of posts) {
+
+    // 댓글 가져오기
+    const { data: comments } = await sb
+      .from('comments')
+      .select('*')
+      .eq('post_id', post.id)
+      .order('id');
+
     const li = document.createElement("li");
-    li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
+
+    li.innerHTML = `
+      <strong>${post.title}</strong><br>
+      ${post.content}
+
+      <div style="margin-top:10px; padding-left:10px;">
+        <h4>댓글</h4>
+        <ul id="comments-${post.id}">
+          ${comments.map(c => `<li>${c.content}</li>`).join('')}
+        </ul>
+
+        <input type="text" id="comment-input-${post.id}" placeholder="댓글 입력">
+        <button onclick="addComment(${post.id})">등록</button>
+      </div>
+
+      <hr>
+    `;
+
     list.appendChild(li);
-  });
-}
-
-// 글 작성
-async function createPost() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-
-  const { error } = await sb
-    .from('bbs')
-    .insert([{ title, content }]);
-
-  if (error) {
-    console.error(error);
-    return;
   }
-
-  loadPosts();
 }
 
-// 페이지 로드 시 실행
-document.addEventListener("DOMContentLoaded", loadPosts);
-</script>
+			// 글 작성
+			async function createPost() {
+			  const title = document.getElementById("title").value;
+			  const content = document.getElementById("content").value;
+
+			  const { error } = await sb
+				.from('bbs')
+				.insert([{ title, content }]);
+
+			  if (error) {
+				console.error(error);
+				return;
+			  }
+
+			  loadPosts();
+			}
+
+			// 페이지 로드 시 실행
+			document.addEventListener("DOMContentLoaded", loadPosts);
+			</script>
 
 	</body>
 </html>
