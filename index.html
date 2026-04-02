@@ -21,7 +21,7 @@
 						<ul>
 							<li><a href="#intro">회사 소개</a></li>
 							<li><a href="#one">서비스 설명</a></li>
-							<li><a href="#two">게시판</a></li>
+							<li><a href="#board">게시판</a></li>
 							<li><a href="#three">연락처</a></li>
 						</ul>
 					</nav>
@@ -84,47 +84,18 @@
 					</section>
 
 				<!-- Two -->
-					<section id="two" class="wrapper style3 fade-up">
-						<div class="inner">
-							<h2>What we do</h2>
-							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
-							<div class="features">
-								<section>
-									<span class="icon solid major fa-code"></span>
-									<h3>Lorem ipsum amet</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-lock"></span>
-									<h3>Aliquam sed nullam</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-cog"></span>
-									<h3>Sed erat ullam corper</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-desktop"></span>
-									<h3>Veroeros quis lorem</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon solid major fa-link"></span>
-									<h3>Urna quis bibendum</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-								<section>
-									<span class="icon major fa-gem"></span>
-									<h3>Aliquam urna dapibus</h3>
-									<p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
-								</section>
-							</div>
-							<ul class="actions">
-								<li><a href="generic.html" class="button">Learn more</a></li>
-							</ul>
-						</div>
-					</section>
+					<section id="board" class="wrapper style3 fade-up">
+					  <div class="inner">
+						<h2>게시판</h2>
+						
+						<ul id="post-list"></ul>
+
+						<h3>글 작성</h3>
+						<input type="text" id="title" placeholder="제목" />
+						<textarea id="content" placeholder="내용"></textarea>
+						<button onclick="createPost()">등록</button>
+					  </div>
+					</section>				
 
 				<!-- Three -->
 					<section id="three" class="wrapper style1 fade-up">
@@ -204,6 +175,33 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+			<script>
+			const supabase = window.supabase.createClient(
+			  "https://tuusoowjscftqsairkjy.supabase.co",
+			  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dXNvb3dqc2NmdHFzYWlya2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTEzNzAsImV4cCI6MjA5MDY4NzM3MH0.ab8laTx2EIfLb397nWlFXSNKhlQbmaqB3j0LaRpJ8ZI"
+			);
+			</script>
+			
+			<script>
+			async function loadPosts() {
+			  const { data } = await supabase
+				.from('posts')
+				.select('*')
+				.order('id', { ascending: false });
+
+			  const list = document.getElementById("post-list");
+			  list.innerHTML = "";
+
+			  data.forEach(post => {
+				const li = document.createElement("li");
+				li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
+				list.appendChild(li);
+			  });
+			}
+
+			loadPosts();
+			</script>			
 
 	</body>
 </html>
