@@ -175,46 +175,59 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-			<script>
-			const supabase = window.supabase.createClient(
-			  "https://tuusoowjscftqsairkjy.supabase.co",
-			  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dXNvb3dqc2NmdHFzYWlya2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTEzNzAsImV4cCI6MjA5MDY4NzM3MH0.ab8laTx2EIfLb397nWlFXSNKhlQbmaqB3j0LaRpJ8ZI"
-			);
-			</script>
-			
-			<script>
-			async function loadPosts() {
-			  const { data } = await supabase
-				.from('bbd')
-				.select('*')
-				.order('id', { ascending: false });
+	
 
-			  const list = document.getElementById("post-list");
-			  list.innerHTML = "";
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-			  data.forEach(post => {
-				const li = document.createElement("li");
-				li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
-				list.appendChild(li);
-			  });
-			}
+<script>
+const SUPABASE_URL = "https://tuusoowjscftqsairkjy.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dXNvb3dqc2NmdHFzYWlya2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTEzNzAsImV4cCI6MjA5MDY4NzM3MH0.ab8laTx2EIfLb397nWlFXSNKhlQbmaqB3j0LaRpJ8ZI";
 
-			loadPosts();
-			</script>	
-			
-			<script>
-			async function createPost() {
-			  const title = document.getElementById("title").value;
-			  const content = document.getElementById("content").value;
+// 전역 변수 하나만
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-			  await supabase
-				.from('bbs')   // ✅ 여기만 변경
-				.insert([{ title, content }]);
+// 게시글 불러오기
+async function loadPosts() {
+  const { data, error } = await sb
+    .from('bbs')
+    .select('*')
+    .order('id', { ascending: false });
 
-			  loadPosts();
-			}
-			</script>			
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const list = document.getElementById("post-list");
+  list.innerHTML = "";
+
+  data.forEach(post => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
+    list.appendChild(li);
+  });
+}
+
+// 글 작성
+async function createPost() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  const { error } = await sb
+    .from('bbs')
+    .insert([{ title, content }]);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadPosts();
+}
+
+// 페이지 로드 시 실행
+document.addEventListener("DOMContentLoaded", loadPosts);
+</script>
 
 	</body>
 </html>
