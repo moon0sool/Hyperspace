@@ -193,14 +193,27 @@
 			  const list = document.getElementById("post-list");
 			  list.innerHTML = "";
 
-			  data.forEach(bbs => {
+			  data.forEach(post => {
 				const li = document.createElement("li");
-				li.innerHTML = `<strong>${bbs.title}</strong><br>${bbs.content}`;
+				li.innerHTML = `<strong>${post.title}</strong><br>${post.content}`;
 				list.appendChild(li);
 			  });
 			}
 
 			loadPosts();
+			</script>	
+			
+			<script>
+			async function createPost() {
+			  const title = document.getElementById("title").value;
+			  const content = document.getElementById("content").value;
+
+			  await supabase
+				.from('bbs')   // ✅ 여기만 변경
+				.insert([{ title, content }]);
+
+			  loadPosts();
+			}
 			</script>			
 
 	</body>
